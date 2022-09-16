@@ -1,11 +1,10 @@
 package models
 
-import "gorm.io/gorm"
 
 type Item struct {
-	gorm.Model
-	item_code string
-	description string
-	quantity int
-	order_id uint
+	ItemId int `gorm:"primaryKey;auto_increment" json:"itemId"`
+	ItemCode string `json:"itemCode"`
+	Description string `json:"description"`
+	Quantity int `json:"quantity"`
+	OrderId uint `json:"orderId"`
 }
