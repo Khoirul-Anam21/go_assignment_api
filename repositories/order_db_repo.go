@@ -1,8 +1,7 @@
 package repositories
 
 import (
-	// "fmt"
-	"fmt"
+
 	"go_assignment_api/models"
 	// "io/ioutil"
 	"log"
@@ -37,7 +36,7 @@ func (dp OrderDBRepository) DeleteOrders(id string) (string, error) {
 		log.Println("Data not found")
 	}
 	err = dp.DB.Find(&items).Error
-	fmt.Printf("%+v\n", order)
+	// fmt.Printf("%+v\n", order)
 	if err != nil {
 		log.Println("Data not found")
 	}
@@ -60,7 +59,6 @@ func (dp OrderDBRepository) AddOrder(order models.Order) (models.Order, error) {
 	err := dp.DB.Create(&order).Error
 	if err != nil {
 		log.Println("ERROR -> Invalid SQL Syntax")
-
 	}
 	return order, err
 }
