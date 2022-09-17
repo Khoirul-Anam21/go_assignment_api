@@ -21,8 +21,9 @@ func (dp OrderDBRepository) GetOrders() ([]models.Order, error) {
 	err := dp.DB.Preload("Items").Find(&orders).Error
 	if err != nil {
 		log.Fatal("ERROR -> Invalid SQL Syntax")
+		return []models.Order{}, err
 	}
-	return orders, err
+	return orders, nil
 }
 
 func (dp OrderDBRepository) DeleteOrders(id string) (string, error) {
@@ -34,21 +35,25 @@ func (dp OrderDBRepository) DeleteOrders(id string) (string, error) {
 	err := dp.DB.First(&order, id).Error
 	if err != nil {
 		log.Println("Data not found")
+		return "", err;
 	}
 	err = dp.DB.Find(&items).Error
 	// fmt.Printf("%+v\n", order)
 	if err != nil {
 		log.Println("Data not found")
+		return "", err;
 	}
 	err = dp.DB.Delete(&items, "order_id LIKE ?", id).Error
 	if err != nil {
 		log.Println("failed to delete")
+		return "", err;
 	}
 	err = dp.DB.Delete(&order, order.OrderId).Error
 	if err != nil {
 		log.Println("failed to delete")
+		return "", err;
 	}
-	return "success delete data", err
+	return "success delete data", nil
 }
 
 func (dp OrderDBRepository) AddOrder(order models.Order) (models.Order, error) {
@@ -59,6 +64,7 @@ func (dp OrderDBRepository) AddOrder(order models.Order) (models.Order, error) {
 	err := dp.DB.Create(&order).Error
 	if err != nil {
 		log.Println("ERROR -> Invalid SQL Syntax")
+		return models.Order{}, err;
 	}
 	return order, err
 }
@@ -71,12 +77,14 @@ func (dp OrderDBRepository) UpdateOrders(order models.Order, id string) (models.
 	// tes, err := ioutil.ReadAll(c.Request.Body);
 	err := dp.DB.Preload("Items").First(&oldOrder, id).Error
 	if err != nil {
-		log.Println("ERROR -> Invalid SQL Syntax")
+		log.Println("ERROR -> Invalid SQL Syntax");
+		return models.Order{}, err;
 	}
 
 	err = dp.DB.Preload("Items").Model(&oldOrder).Updates(order).Error
 	if err != nil {
 		log.Println("ERROR -> Invalid SQL Syntax")
+		return models.Order{}, err;
 	}
 	return order, err
 }
