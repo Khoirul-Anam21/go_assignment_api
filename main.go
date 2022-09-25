@@ -11,8 +11,11 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	// "github.com/jinzhu/gorm"
+	// "gorm.io/gorm"
 	"github.com/joho/godotenv"
 )
+
 
 func main() {
 	err := godotenv.Load()
@@ -21,11 +24,23 @@ func main() {
 	}
 	routerEngine := gin.Default()
 	db := conf.DBInit();
-	repository := repositories.GenerateOrderRepository(*db);
-	service := services.ProvideService(*repository);
-	controllers := controllers.ProvideController(*service)
+	// mainDB = db
+	orderRepository := repositories.GenerateOrderRepository(*db);
+	userRepository := repositories.GenerateUserRepository(*db);
+	productRepository := repositories.GenerateProductRepository(*db);
 
-	router.RunRouter(routerEngine, controllers)
+	orderService := services.ProvideService(*orderRepository);
+	userService := services.ProvideUserService(*userRepository);
+	productService := services.ProvideProductService(*productRepository);
+
+	orderControllers := controllers.ProvideController(*orderService);
+	userControllers := controllers.ProvideUserController(*userService);
+	productControllers := controllers.ProvideProductController(*productService);
+
+	router.RunOrderRouter(routerEngine, orderControllers)
+	router.RunUserRouter(routerEngine, userControllers)
+	router.RunProductRouter(routerEngine, productControllers)
+
 	routerEngine.Run(os.Getenv("PORT"))
 	fmt.Println("Server berjalan pada http://localhost:3000")
 }
